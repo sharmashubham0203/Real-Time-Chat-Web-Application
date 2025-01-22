@@ -23,7 +23,7 @@ export default function Registration() {
     };
 
     try {
-      const req = await fetch(`https://real-time-chat-web-application-1.onrender.com/api/auth/local/register`, reqOptions);
+      const req = await fetch(`https://strapi-fqmr.onrender.com/api/auth/local/register`, reqOptions);
       const res = await req.json();
 
       if (!req.ok) {
