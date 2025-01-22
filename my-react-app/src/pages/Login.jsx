@@ -8,56 +8,61 @@ export default function Login() {
   const navigate = useNavigate();
 
   const login = async (event) => {
-  event.preventDefault();
-  setMessage(null);
+    event.preventDefault();
+    setMessage(null);
 
-  // Ensure email and password are provided
-  if (!email || !password) {
-    setMessage("Please provide both email and password.");
-    return;
-  }
+    // Ensure email and password are provided
+    if (!email || !password) {
+      setMessage("Please provide both email and password.");
+      return;
+    }
 
-  const jsonData = { identifier: email, password };
+    const jsonData = { identifier: email, password };
 
-  const reqOptions = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      // If you have a token, add it here (for protected routes or subsequent requests)
-      'Authorization': `Bearer ${localStorage.getItem('token')}` || '',  // Only include token if available
-    },
-    body: JSON.stringify(jsonData),
+    const reqOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // Include token only if available
+        'Authorization': Bearer ${localStorage.getItem('token') || ''},
+      },
+      body: JSON.stringify(jsonData),
+    };
+
+    try {
+      const req = await fetch('https://strapi-fqmr.onrender.com/api/auth/local', reqOptions);
+      const res = await req.json();
+
+      console.log(res);  // Log the response for debugging
+
+      if (req.status === 401) {
+        // Handle Unauthorized error (invalid credentials)
+        setMessage('Invalid credentials, please try again.');
+        return;
+      }
+
+      if (res.error) {
+        setMessage(res.error.message);
+        return;
+      }
+
+      if (res.jwt && res.user) {
+        // Store the JWT token in localStorage for subsequent requests
+        localStorage.setItem('token', res.jwt);
+        setMessage('Login successful.');
+        navigate('/chatroom');  // Redirect to the chatroom page after successful login
+      }
+    } catch (error) {
+      console.error('Request failed:', error);
+      setMessage('An error occurred. Please try again later.');
+    }
   };
 
-  try {
-    const req = await fetch('https://strapi-fqmr.onrender.com/apI/auth/local', reqOptions);
-    const res = await req.json();
-
-    console.log(res);  // Log the response for debugging
-
-    if (req.status === 401) {
-      // Handle Unauthorized error (invalid credentials)
-      setMessage('Invalid credentials, please try again.');
-      return;
-    }
-
-    if (res.error) {
-      setMessage(res.error.message);
-      return;
-    }
-
-    if (res.jwt && res.user) {
-      // Store the JWT token in localStorage for subsequent requests
-      localStorage.setItem('token', res.jwt);
-      setMessage('Login successful.');
-      navigate('/chatroom');  // Redirect to the chatroom page after successful login
-    }
-  } catch (error) {
-    console.error('Request failed:', error);
-    setMessage('An error occurred. Please try again later.');
-  }
-};
-
+  // Clear message on input change
+  const handleChange = (e, setter) => {
+    setter(e.target.value);
+    setMessage(null);  // Clear message when user starts typing
+  };
 
   return (
     <div className="flex flex-wrap w-full h-screen bg-slate-100">
@@ -76,7 +81,7 @@ export default function Login() {
               type="email"
               placeholder="Email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => handleChange(e, setEmail)}
               className="block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300 focus:outline-none"
             />
 
@@ -84,7 +89,7 @@ export default function Login() {
               type="password"
               placeholder="Password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => handleChange(e, setPassword)}
               className="block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300 focus:outline-none"
             />
 
