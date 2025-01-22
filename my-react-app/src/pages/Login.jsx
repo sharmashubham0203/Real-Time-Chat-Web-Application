@@ -13,7 +13,7 @@ export default function Login() {
 
     // Ensure email and password are provided
     if (!email || !password) {
-      setMessage("Please provide both email and password.");
+      setMessage('Please provide both email and password.');
       return;
     }
 
@@ -24,7 +24,7 @@ export default function Login() {
       headers: {
         'Content-Type': 'application/json',
         // Include token only if available
-        'Authorization': Bearer ${localStorage.getItem('token') || ''},
+        'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
       },
       body: JSON.stringify(jsonData),
     };
@@ -33,7 +33,7 @@ export default function Login() {
       const req = await fetch('https://strapi-fqmr.onrender.com/api/auth/local', reqOptions);
       const res = await req.json();
 
-      console.log(res);  // Log the response for debugging
+      console.log(res); // Log the response for debugging
 
       if (req.status === 401) {
         // Handle Unauthorized error (invalid credentials)
@@ -50,7 +50,7 @@ export default function Login() {
         // Store the JWT token in localStorage for subsequent requests
         localStorage.setItem('token', res.jwt);
         setMessage('Login successful.');
-        navigate('/chatroom');  // Redirect to the chatroom page after successful login
+        navigate('/chatroom'); // Redirect to the chatroom page after successful login
       }
     } catch (error) {
       console.error('Request failed:', error);
@@ -61,7 +61,7 @@ export default function Login() {
   // Clear message on input change
   const handleChange = (e, setter) => {
     setter(e.target.value);
-    setMessage(null);  // Clear message when user starts typing
+    setMessage(null); // Clear message when user starts typing
   };
 
   return (
