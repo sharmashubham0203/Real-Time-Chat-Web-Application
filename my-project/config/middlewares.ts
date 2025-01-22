@@ -26,7 +26,8 @@ module.exports = [
 module.exports = {
   settings: {
     cors: {
-      origin: ['https://real-time-chat-web-application-2.onrender.com'],
+      origin: ['https://real-time-chat-web-application-2.onrender.com'], // Add your frontend URL here
     },
   },
 };
+
