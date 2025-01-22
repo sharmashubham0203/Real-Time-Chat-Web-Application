@@ -8,41 +8,47 @@ export default function Login() {
   const navigate = useNavigate();
 
   const login = async (event) => {
-    event.preventDefault();
-    setMessage(null);
+  event.preventDefault();
+  setMessage(null);
 
-    const jsonData = { identifier: email, password };
+  // Ensure email and password are provided
+  if (!email || !password) {
+    setMessage("Please provide both email and password.");
+    return;
+  }
 
-    const reqOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(jsonData),
-    };
+  const jsonData = { identifier: email, password };
 
-    try {
-      const req = await fetch(`https://real-time-chat-web-application-1.onrender.com/api/auth/local`, reqOptions);
-      const res = await req.json();
-
-      if (!req.ok) {
-        // If the response has an error
-        const errorMessage = res?.error?.message || 'Login failed. Please try again.';
-        setMessage(errorMessage);
-        return;
-      }
-
-      if (res.jwt && res.user) {
-        setMessage('Login successful.');
-        // Save the token in localStorage (optional)
-        localStorage.setItem('jwt', res.jwt);
-        navigate('/chatroom');
-      }
-    } catch (error) {
-      setMessage('An error occurred. Please try again later.');
-      console.error('Login error:', error);
-    }
+  const reqOptions = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      // If you have a token, add it here (e.g., for protected routes)
+      'Authorization': `Bearer ${localStorage.getItem('token')}`, // Or another method to get the token
+    },
+    body: JSON.stringify(jsonData),
   };
+
+  try {
+    const req = await fetch('https://real-time-chat-web-application-1.onrender.com/api/auth/local', reqOptions);
+    const res = await req.json();
+
+    if (res.error) {
+      setMessage(res.error.message);
+      return;
+    }
+
+    if (res.jwt && res.user) {
+      // Store the JWT token in localStorage or sessionStorage if necessary
+      localStorage.setItem('token', res.jwt);
+      setMessage('Login successful.');
+      navigate('/chatroom');
+    }
+  } catch (error) {
+    setMessage('An error occurred. Please try again later.');
+  }
+};
+
 
   return (
     <div className="flex flex-wrap w-full h-screen bg-slate-100">
