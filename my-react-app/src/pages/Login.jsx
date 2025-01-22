@@ -22,7 +22,7 @@ export default function Login() {
     };
 
     try {
-      const req = await fetch('https://real-time-chat-web-application-8qho.onrender.com/api/auth/local', reqOptions);
+      const req = await fetch('https://real-time-chat-web-application-1.onrender.com/api/auth/local', reqOptions);
       const res = await req.json();
 
       if (res.error) {
