@@ -22,75 +22,80 @@ export default function Login() {
     };
 
     try {
-      const req = await fetch('https://real-time-chat-web-application-1.onrender.com/api/auth/local', reqOptions);
+      const req = await fetch(`https://real-time-chat-web-application-1.onrender.com/api/auth/local`, reqOptions);
       const res = await req.json();
 
-      if (res.error) {
-        setMessage(res.error.message);
+      if (!req.ok) {
+        // If the response has an error
+        const errorMessage = res?.error?.message || 'Login failed. Please try again.';
+        setMessage(errorMessage);
         return;
       }
 
       if (res.jwt && res.user) {
         setMessage('Login successful.');
+        // Save the token in localStorage (optional)
+        localStorage.setItem('jwt', res.jwt);
         navigate('/chatroom');
       }
     } catch (error) {
       setMessage('An error occurred. Please try again later.');
+      console.error('Login error:', error);
     }
   };
 
   return (
     <div className="flex flex-wrap w-full h-screen bg-slate-100">
-        <div className="flex justify-center items-center w-full sm:w-1/2 p-4">
-            <img className="w-full md:w-9/12 rounded-xl" src="/image1.jpg" alt="Image Not Found" />
-        </div>
-        <div className="flex flex-col justify-center items-center w-full sm:w-1/2 p-4 gap-y-10">
-            <h1 className="text-blue-500 font-serif text-4xl sm:text-5xl md:text-6xl text-center">
-                ChatterBox
-            </h1>
-            <div className="w-full sm:w-8/12 lg:w-6/12 p-6 border rounded-lg shadow-md bg-blue-100">
-                <form onSubmit={login} className="space-y-4">
-                    <h2 className="text-lg font-bold text-center">Login</h2>
+      <div className="flex justify-center items-center w-full sm:w-1/2 p-4">
+        <img className="w-full md:w-9/12 rounded-xl" src="/image1.jpg" alt="Image Not Found" />
+      </div>
+      <div className="flex flex-col justify-center items-center w-full sm:w-1/2 p-4 gap-y-10">
+        <h1 className="text-blue-500 font-serif text-4xl sm:text-5xl md:text-6xl text-center">
+          ChatterBox
+        </h1>
+        <div className="w-full sm:w-8/12 lg:w-6/12 p-6 border rounded-lg shadow-md bg-blue-100">
+          <form onSubmit={login} className="space-y-4">
+            <h2 className="text-lg font-bold text-center">Login</h2>
 
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300 focus:outline-none"
-                    />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300 focus:outline-none"
+            />
 
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300 focus:outline-none"
-                    />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300 focus:outline-none"
+            />
 
-                    <button
-                        type="submit"
-                        className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
-                    >
-                        Login
-                    </button>
+            <button
+              type="submit"
+              className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
+            >
+              Login
+            </button>
 
-                    {message && <div className="text-red-500 mt-2">{message}</div>}
+            {message && <div className="text-red-500 mt-2">{message}</div>}
 
-                    <div className="form-footer mt-4 text-sm text-center">
-                        <p>
-                            Don't have an account?{' '}
-                            <button
-                                onClick={() => navigate('/register')}
-                                className="text-blue-500 underline hover:text-blue-600"
-                            >
-                                Register here
-                            </button>
-                        </p>
-                    </div>
-                </form>
+            <div className="form-footer mt-4 text-sm text-center">
+              <p>
+                Don't have an account?{' '}
+                <button
+                  onClick={() => navigate('/register')}
+                  className="text-blue-500 underline hover:text-blue-600"
+                >
+                  Register here
+                </button>
+              </p>
             </div>
+          </form>
         </div>
+      </div>
     </div>
   );
 }
