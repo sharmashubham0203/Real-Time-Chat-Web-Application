@@ -30,7 +30,7 @@ export default function Login() {
   };
 
   try {
-    const req = await fetch('https://strapi-fqmr.onrender.com/api/auth/local', reqOptions);
+    const req = await fetch('https://strapi-fqmr.onrender.com/apI/auth/local', reqOptions);
     const res = await req.json();
 
     console.log(res);  // Log the response for debugging
