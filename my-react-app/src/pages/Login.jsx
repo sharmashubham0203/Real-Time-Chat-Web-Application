@@ -8,47 +8,52 @@ export default function Login() {
   const navigate = useNavigate();
 
   const login = async (event) => {
-  event.preventDefault();
-  setMessage(null);
+    event.preventDefault();
+    setMessage(null);
 
-  // Ensure email and password are provided
-  if (!email || !password) {
-    setMessage("Please provide both email and password.");
-    return;
-  }
-
-  const jsonData = { identifier: email, password };
-
-  const reqOptions = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      // If you have a token, add it here (e.g., for protected routes)
-      'Authorization': `Bearer ${localStorage.getItem('token')}`, // Or another method to get the token
-    },
-    body: JSON.stringify(jsonData),
-  };
-
-  try {
-    const req = await fetch('https://real-time-chat-web-application-1.onrender.com/api/auth/local', reqOptions);
-    const res = await req.json();
-
-    if (res.error) {
-      setMessage(res.error.message);
+    // Ensure email and password are provided
+    if (!email || !password) {
+      setMessage("Please provide both email and password.");
       return;
     }
 
-    if (res.jwt && res.user) {
-      // Store the JWT token in localStorage or sessionStorage if necessary
-      localStorage.setItem('token', res.jwt);
-      setMessage('Login successful.');
-      navigate('/chatroom');
-    }
-  } catch (error) {
-    setMessage('An error occurred. Please try again later.');
-  }
-};
+    const jsonData = { identifier: email, password };
 
+    const reqOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        // If you have a token, add it here (for protected routes or subsequent requests)
+        'Authorization': `Bearer ${localStorage.getItem('token')}` || '',  // Only include token if available
+      },
+      body: JSON.stringify(jsonData),
+    };
+
+    try {
+      const req = await fetch('https://real-time-chat-web-application-1.onrender.com/api/auth/local', reqOptions);
+      const res = await req.json();
+
+      if (req.status === 401) {
+        // Handle Unauthorized error (invalid credentials)
+        setMessage('Invalid credentials, please try again.');
+        return;
+      }
+
+      if (res.error) {
+        setMessage(res.error.message);
+        return;
+      }
+
+      if (res.jwt && res.user) {
+        // Store the JWT token in localStorage for subsequent requests
+        localStorage.setItem('token', res.jwt);
+        setMessage('Login successful.');
+        navigate('/chatroom');  // Redirect to the chatroom page after successful login
+      }
+    } catch (error) {
+      setMessage('An error occurred. Please try again later.');
+    }
+  };
 
   return (
     <div className="flex flex-wrap w-full h-screen bg-slate-100">
@@ -105,4 +110,3 @@ export default function Login() {
     </div>
   );
 }
-
