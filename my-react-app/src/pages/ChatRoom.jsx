@@ -17,7 +17,7 @@ const ChatRoom = () => {
   useEffect(() => {
     localStorage.removeItem("chatHistory");
 
-    const socket = new WebSocket("ws://localhost:8080");
+    const socket = new WebSocket("https://real-time-chat-web-application-i7ha.onrender.com");
 
     socket.onopen = () => {
       console.log("Connected to WebSocket server");
